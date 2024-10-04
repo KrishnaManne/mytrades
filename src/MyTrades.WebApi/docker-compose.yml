@@ -21,6 +21,14 @@ services:
       - "8001:80"
     depends_on:
       - postgres
+  
+  aspiredashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard
+    container_name: aspiredashboard
+    ports:
+      - "18888:18888"
+      - "18889:18889"
+      - "18890:18890"
 
 volumes:
   postgres-data: 

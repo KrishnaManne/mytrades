@@ -4,10 +4,12 @@ namespace MyTrades.WebApi;
 
 public class CapitalPersistenceService : ICapitalPersistenceService
 {
+    private readonly ILogger<CapitalPersistenceService> logger;
     private readonly IUnitOfWork unitOfWork;
     private readonly IGenericRepository<Capital> capitalRepository;
-    public CapitalPersistenceService(IUnitOfWork unitOfWork)
+    public CapitalPersistenceService(IUnitOfWork unitOfWork, ILogger<CapitalPersistenceService> logger)
     {
+        this.logger = logger;
         this.unitOfWork = unitOfWork;
         this.capitalRepository = this.unitOfWork.Repository<Capital>();
     }
@@ -20,6 +22,7 @@ public class CapitalPersistenceService : ICapitalPersistenceService
 
     public async Task<Capital?> GetCapitalAsync()
     {
+        logger.LogInformation("Test log");
         return await capitalRepository
                     .SingleOrDefaultAsync(x=> true);
     }
