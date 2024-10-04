@@ -1,0 +1,10 @@
+@MyTrades.WebApi_HostAddress = http://localhost:5187
+
+GET {{MyTrades.WebApi_HostAddress}}/api/trades/
+Accept: application/json
+
+POST {{MyTrades.WebApi_HostAddress}}/api/trades/
+Accept: application/json
+Body:
+
+###
