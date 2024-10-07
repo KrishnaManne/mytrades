@@ -1,10 +1,23 @@
 @MyTrades.WebApi_HostAddress = http://localhost:5187
 
-GET {{MyTrades.WebApi_HostAddress}}/api/trades/
-Accept: application/json
+###
 
-POST {{MyTrades.WebApi_HostAddress}}/api/trades/
+GET {{MyTrades.WebApi_HostAddress}}/api/trades?pageSize=10&pageNumber=1
+Content-Type: application/json
+
+###
+
+# @name createcapital
+POST {{MyTrades.WebApi_HostAddress}}/api/capital/
+Content-Type: application/json
+
+{
+    "id": "{{$guid}}",
+    "amount": "{{$randomInt 1 200}}"
+}
+###
+@capitalId = {{createcapital.response.body.$.id}}
+GET {{MyTrades.WebApi_HostAddress}}/api/capital/{{capitalId}}
 Accept: application/json
-Body:
 
 ###

@@ -12,44 +12,56 @@ public class TradesPersistenceService : ITradesPersistenceService
         this.tradeRepository = this.unitOfWork.Repository<Trade>();
     }
 
-    public async Task AddTradeAsync(Trade trade)
+    public async Task<Trade> AddTradeAsync(Trade trade)
     {
-        await tradeRepository.AddAsync(trade);
+        var createdTrade = await tradeRepository.AddAsync(trade);
         await unitOfWork.SaveAsync();
+        return createdTrade;
     }
 
-    public async Task<List<Trade>> GetTradesAsync(
-        int pageSize = 10, 
-        int pageNumber = 1)
+    public async Task<PagedEntityDto<Trade>> GetTradesAsync(
+        int pageSize, 
+        int pageNumber)
     {
-        return await tradeRepository.Entity
+        pageNumber = pageNumber == 0 ? 1 : Math.Abs(pageNumber);
+
+        double totalInDecimal = tradeRepository.Entity.Count()/pageSize;
+        var total = (int)Math.Ceiling(totalInDecimal);
+
+        var pagedEntities = await tradeRepository.Entity
         .OrderByDescending(x => x.EntryDateTime)
-        .Skip(pageSize * ((pageNumber == 0 ? 1 : pageNumber) - 1))
+        .Skip(pageSize * (pageNumber - 1))
         .Take(pageSize)
         .ToListAsync();
+
+        return new PagedEntityDto<Trade>(pageNumber, pageSize, total, pagedEntities);
     }
 
-    public async Task<bool> UpdateTradeAsync(Guid id, Trade trade)
-    {        
+    public async Task UpdateTradeAsync(Guid id, Trade trade)
+    {
         trade.Id = id;
-        tradeRepository.Update(trade);
+        await tradeRepository.UpdateAsync(id, trade);
         await unitOfWork.SaveAsync();
-        return true;
     }
 
-    public async Task<bool> DeleteTradeAsync(Guid id)
+    public async Task DeleteTradeAsync(Guid id)
     {
         await tradeRepository.DeleteAsync(id);
         await unitOfWork.SaveAsync();
-        return true;
     }    
+
+    public async Task<Trade> GetTradeByIdAsync(Guid id)
+    {
+        return await tradeRepository.GetByIdAsync(id);
+    }
 
 }
 
 public interface ITradesPersistenceService
 {
-    Task AddTradeAsync(Trade trade);
-    Task<List<Trade>> GetTradesAsync(int pageSize, int pageNumber);
-    Task<bool> UpdateTradeAsync(Guid id, Trade trade);
-    Task<bool> DeleteTradeAsync(Guid id);
+    Task<Trade> AddTradeAsync(Trade trade);
+    Task<PagedEntityDto<Trade>> GetTradesAsync(int pageSize, int pageNumber);
+    Task UpdateTradeAsync(Guid id, Trade trade);
+    Task DeleteTradeAsync(Guid id);
+    Task<Trade> GetTradeByIdAsync(Guid id);
 }

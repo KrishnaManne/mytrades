@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
@@ -27,12 +28,15 @@ public static class ServiceCollectionExtensions
         {
             tracing.AddHttpClientInstrumentation();
             tracing.AddAspNetCoreInstrumentation();
+            tracing.AddEntityFrameworkCoreInstrumentation();
         })
         .WithLogging();
         return services;
     }
-    public static IServiceCollection AddPersistenceServices(this IServiceCollection services){
-        services.AddDbContext<MyTradesDbContext>();
+    public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration){
+        services.AddDbContext<MyTradesDbContext>(options =>{
+            options.UseNpgsql(configuration.GetConnectionString("PostgresDb"));
+        });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ITradesPersistenceService, TradesPersistenceService>();
         services.AddScoped<ICapitalPersistenceService, CapitalPersistenceService>();

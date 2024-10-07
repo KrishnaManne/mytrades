@@ -21,20 +21,25 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return await _dbSet.ToListAsync();
     }
 
-    public async Task<T?> GetByIdAsync(Guid id)
+    public async Task<T> GetByIdAsync(Guid id)
     {
-        return await _dbSet.FindAsync(id);
+        var entity = await _dbSet.FindAsync(id);
+        if(entity is null)
+            throw new EntityNotFoundException(id, $"Entity not found with the id {id}");
+        
+        return entity;
     }
 
-    public async Task AddAsync(T entity)
+    public async Task<T> AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
+        return entity;
     }
 
-    public void Update(T entity)
+    public async Task UpdateAsync(Guid id, T entity)
     {
-        _dbSet.Attach(entity);
-        _context.Entry(entity).State = EntityState.Modified;
+        var foundEntity = await GetByIdAsync(id);
+        _context.Entry(foundEntity).CurrentValues.SetValues(entity);
     }
 
     public void Delete(T entity)
@@ -48,9 +53,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
     public async Task DeleteAsync(Guid id)
     {
-        var entity = await _dbSet.FindAsync(id);
-        if(entity is null)
-            return;
+        var entity = await GetByIdAsync(id);
         Delete(entity);        
     }
 

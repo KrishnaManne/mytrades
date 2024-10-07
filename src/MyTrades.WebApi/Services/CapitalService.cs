@@ -14,39 +14,38 @@ public class CapitalPersistenceService : ICapitalPersistenceService
         this.capitalRepository = this.unitOfWork.Repository<Capital>();
     }
 
-    public async Task AddCapitalAsync(Capital capital)
+    public async Task<Capital> AddCapitalAsync(Capital capital)
     {
-        await capitalRepository.AddAsync(capital);
+        var createdEntity = await capitalRepository.AddAsync(capital);
         await unitOfWork.SaveAsync();
+        return createdEntity;
     }
 
-    public async Task<Capital?> GetCapitalAsync()
+    public async Task<Capital?> GetCapitalAsync(Guid id)
     {
         logger.LogInformation("Test log");
         return await capitalRepository
-                    .SingleOrDefaultAsync(x=> true);
+                    .SingleOrDefaultAsync(x=> x.Id == id);
     }
 
-    public async Task<bool> UpdateCapitalAsync(Guid id, Capital capital)
+    public async Task UpdateCapitalAsync(Guid id, Capital capital)
     {   
-        capitalRepository.Update(capital);
+        await capitalRepository.UpdateAsync(id, capital);
         await unitOfWork.SaveAsync();
-        return true;
     }
 
-    public async Task<bool> DeleteCapitalAsync(Guid id)
+    public async Task DeleteCapitalAsync(Guid id)
     {
         await capitalRepository.DeleteAsync(id);
         await unitOfWork.SaveAsync();
-        return true;
     }    
 
 }
 
 public interface ICapitalPersistenceService
 {
-    Task AddCapitalAsync(Capital capital);
-    Task<Capital?> GetCapitalAsync();
-    Task<bool> UpdateCapitalAsync(Guid id, Capital trade);
-    Task<bool> DeleteCapitalAsync(Guid id);
+    Task<Capital> AddCapitalAsync(Capital capital);
+    Task<Capital?> GetCapitalAsync(Guid id);
+    Task UpdateCapitalAsync(Guid id, Capital trade);
+    Task DeleteCapitalAsync(Guid id);
 }
