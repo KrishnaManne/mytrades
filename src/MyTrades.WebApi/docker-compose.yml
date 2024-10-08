@@ -5,7 +5,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: krishna.manne9
+      POSTGRES_USER: user
       POSTGRES_PASSWORD: mytrades@123
       POSTGRES_DB: mytrades
     volumes:
@@ -15,7 +15,7 @@ services:
     image: dpage/pgadmin4
     container_name: pgadmin4
     environment:
-      - PGADMIN_DEFAULT_EMAIL=krishna.manne9@live.com
+      - PGADMIN_DEFAULT_EMAIL=test@gmail.com
       - PGADMIN_DEFAULT_PASSWORD=mytrades@123
     ports:
       - "8001:80"
