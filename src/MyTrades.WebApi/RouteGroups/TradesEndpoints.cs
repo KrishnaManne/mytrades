@@ -1,3 +1,5 @@
+using System.Net.Mime;
+
 namespace MyTrades.WebApi;
 
 public static class TradesEndpoints
@@ -6,6 +8,7 @@ public static class TradesEndpoints
     {
         const string tradesAPIGroupPath = "/api/trades";
         var trades = app.MapGroup(tradesAPIGroupPath)
+                        .RequireAuthorization()
                         .WithName("Trades")
                         .WithTags("Trades")
                         .WithOpenApi();
@@ -24,49 +27,56 @@ public static class TradesEndpoints
                     throw;
                 }
             })
+            .Produces<TradeDto>(StatusCodes.Status200OK)
             .WithName("GetTrade");
 
         trades.MapGet("/paged", async (ITradesPersistenceService tradesService, int pageSize = 10, int pageNumber = 1) => 
             await tradesService.GetTradesAsync(pageSize, pageNumber))
+            .Produces<PagedEntityDto<TradeDto>>(StatusCodes.Status200OK)
             .WithName("GetTrades");
 
-        trades.MapPost("/", async (Trade trade, ITradesPersistenceService tradesService) =>
-        {
-            var createdTade = await tradesService.AddTradeAsync(trade);
-            return Results.Created($"{tradesAPIGroupPath}/{createdTade.Id}", createdTade);
-        })
+        trades.MapPost("/", async (TradeDto trade, ITradesPersistenceService tradesService) =>
+            {
+                var createdTade = await tradesService.AddTradeAsync(trade);
+                return Results.Created($"{tradesAPIGroupPath}/{createdTade.Id}", createdTade);
+            })
+            .Produces<TradeDto>(StatusCodes.Status201Created, contentType: "application/json")
+            .Accepts<TradeDto>(contentType: "application/json")
             .WithName("PostTrade");
 
-        trades.MapPut("/{id:guid}", async (Guid id, Trade trade, ITradesPersistenceService tradesService) =>
-        {
-            try
+        trades.MapPut("/{id:guid}", async (Guid id, TradeDto trade, ITradesPersistenceService tradesService) =>
             {
-                await tradesService.UpdateTradeAsync(id, trade);
-                return Results.NoContent();
-            }
-            catch(ApplicationException appException)
-            {
-                if(appException is EntityNotFoundException)
-                    return Results.NotFound();
-                throw;
-            }
-        })
+                try
+                {
+                    await tradesService.UpdateTradeAsync(id, trade);
+                    return Results.NoContent();
+                }
+                catch(ApplicationException appException)
+                {
+                    if(appException is EntityNotFoundException)
+                        return Results.NotFound();
+                    throw;
+                }
+            })
+            .Produces(StatusCodes.Status204NoContent)
+            .Accepts<TradeDto>(contentType: "application/json")
             .WithName("UpdateTrade");
 
         trades.MapDelete("/{id:guid}", async (Guid id, ITradesPersistenceService tradesService) =>
-        {
-            try 
             {
-                await tradesService.DeleteTradeAsync(id);
-                return Results.NoContent();
-            }
-            catch(ApplicationException appException)
-            {
-                if(appException is EntityNotFoundException)
-                    return Results.NotFound();
-                throw;
-            }
-        })
+                try 
+                {
+                    await tradesService.DeleteTradeAsync(id);
+                    return Results.NoContent();
+                }
+                catch(ApplicationException appException)
+                {
+                    if(appException is EntityNotFoundException)
+                        return Results.NotFound();
+                    throw;
+                }
+            })
+            .Produces(StatusCodes.Status204NoContent)
             .WithName("DeleteTrade");
-    }
+    }    
 }

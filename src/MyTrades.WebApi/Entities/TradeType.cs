@@ -1,6 +1,6 @@
 namespace MyTrades.WebApi;
 
-public static class TradeType
+public static class TradeTypes
     {
         public const string SCALPING = "scalping";
         public const string INTRADAY = "intraday";

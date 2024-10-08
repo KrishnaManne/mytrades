@@ -6,7 +6,8 @@ public class MyTradesDbContext : DbContext
 {
     public DbSet<Trade> Trades { get; set; }
     public DbSet<Capital> Capital {get; set;}
-
+    public DbSet<User> Users {get; set;}
+    public DbSet<OtpVerification> OtpVerifications { get; set; }
     public MyTradesDbContext(DbContextOptions options): base(options)
     {
     }

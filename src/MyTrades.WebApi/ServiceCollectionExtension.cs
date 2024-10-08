@@ -33,13 +33,18 @@ public static class ServiceCollectionExtensions
         .WithLogging();
         return services;
     }
-    public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration){
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration){
         services.AddDbContext<MyTradesDbContext>(options =>{
             options.UseNpgsql(configuration.GetConnectionString("PostgresDb"));
         });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ITradesPersistenceService, TradesPersistenceService>();
         services.AddScoped<ICapitalPersistenceService, CapitalPersistenceService>();
+        services.AddScoped<IUserPersistenceService, UserPersistenceService>();
+        services.AddScoped<IOTPPersistenceService, OTPPersistenceService>();
+        services.AddScoped<ISignInManagementService, SignInManagementService>();
+        services.AddSingleton<IEmailService, EmailService>();
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
         return services;
     }
 }

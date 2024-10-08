@@ -10,6 +10,7 @@ Content-Type: application/json
 # @name createcapital
 POST {{MyTrades.WebApi_HostAddress}}/api/capital/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZmE4NWY2NC01NzE3LTQ1NjItYjNmYy0yYzk2M2Y2NmFmYTYiLCJuYW1lIjoia3Jpc2huYSBtYW5uZSIsImVtYWlsIjoia3Jpc2huYS5tYW5uZTlAbGl2ZS5jb20iLCJqdGkiOiI2MDNkNDcwNS1hYzBmLTQ3OGYtOWJjNi1jZDkxYWUwYzAzYWUiLCJleHAiOjE3MjgzODY5NzgsImlzcyI6Im15dHJhZGUud2ViYXBpIiwiYXVkIjoibXl0cmFkZS53ZWJhcGkifQ.GfMe0ZvAM164q0q1XrAYcNcNNOpmDQRSU2cTSIzQbto
 
 {
     "id": "{{$guid}}",
@@ -19,5 +20,5 @@ Content-Type: application/json
 @capitalId = {{createcapital.response.body.$.id}}
 GET {{MyTrades.WebApi_HostAddress}}/api/capital/{{capitalId}}
 Accept: application/json
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZmE4NWY2NC01NzE3LTQ1NjItYjNmYy0yYzk2M2Y2NmFmYTYiLCJuYW1lIjoia3Jpc2huYSBtYW5uZSIsImVtYWlsIjoia3Jpc2huYS5tYW5uZTlAbGl2ZS5jb20iLCJqdGkiOiI2MDNkNDcwNS1hYzBmLTQ3OGYtOWJjNi1jZDkxYWUwYzAzYWUiLCJleHAiOjE3MjgzODY5NzgsImlzcyI6Im15dHJhZGUud2ViYXBpIiwiYXVkIjoibXl0cmFkZS53ZWJhcGkifQ.GfMe0ZvAM164q0q1XrAYcNcNNOpmDQRSU2cTSIzQbto
 ###
