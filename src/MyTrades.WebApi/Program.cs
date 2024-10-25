@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using MyTrades.WebApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,30 +28,48 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGen(c => 
     { 
-        c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "My API", Version = "v1" });
-
-        c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        // Add API Info (This is necessary for Swagger to render correctly)
+        c.SwaggerDoc("v1", new OpenApiInfo
         {
-            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-            Description = "Please enter JWT with Bearer into field",
-            Name = "Authorization",
-            Type = Microsoft.OpenApi.Models.SecuritySchemeType.OAuth2
+            Title = "MyTrades API",
+            Version = "v1",
+            Description = "API for trades management, capital management",
+            Contact = new OpenApiContact
+            {
+                Name = "Support",
+                Email = "support@example.com"
+            }
         });
 
-        c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+        // Add JWT Bearer token configuration
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter a valid JWT token without 'Bearer' prefix (e.g., 'Bearer eyJ...')",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT"  // Optional, just for additional documentation
+        });
+
+        // Add a global requirement for the token
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
             {
-                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                new OpenApiSecurityScheme
                 {
-                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                    Reference = new OpenApiReference
                     {
-                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                        Type = ReferenceType.SecurityScheme,
                         Id = "Bearer"
-                    }
+                    },
+                    Scheme = "oauth2",
+                    Name = "Bearer",
+                    In = ParameterLocation.Header
                 },
-                Array.Empty<string>()
+                new List<string>() // Empty list means no additional scopes
             }
-        }); 
+        });
     });
 
 
