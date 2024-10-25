@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
     }
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration){
         services.AddDbContext<MyTradesDbContext>(options =>{
-            options.UseNpgsql(configuration.GetConnectionString("PostgresDb"));
+            options.UseSqlServer(configuration.GetConnectionString("AzureSqlDatabase"));
         });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ITradesPersistenceService, TradesPersistenceService>();
